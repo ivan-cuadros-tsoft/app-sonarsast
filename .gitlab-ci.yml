@@ -12,24 +12,25 @@ cache:
     - node_modules/
     - .sonar/cache
 
-# install_dependencies:
-#   stage: install
-#   image: node:20
-#   script:
-#     - npm install
-#   artifacts:
-#     paths:
-#       - node_modules/
 install_dependencies:
   stage: install
   image: node:20
-  cache:
-    key: ${CI_COMMIT_REF_SLUG}-npm
-    paths:
-      - ~/.npm
-      - frontend/node_modules
   script:
-    - cd frontend && npm ci && cd ..
+    - npm install
+  artifacts:
+    paths:
+      - node_modules/
+      
+# install_dependencies:
+#   stage: install
+#   image: node:20
+#   cache:
+#     key: ${CI_COMMIT_REF_SLUG}-npm
+#     paths:
+#       - ~/.npm
+#       - frontend/node_modules
+#   script:
+#     - cd frontend && npm ci && cd ..
 
 # unit_tests:
 #   stage: test
