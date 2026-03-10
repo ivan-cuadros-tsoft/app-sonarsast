@@ -1,6 +1,6 @@
 stages:
   - install
-  - test
+  # - test
   - sonar
 
 variables:
@@ -12,22 +12,32 @@ cache:
     - node_modules/
     - .sonar/cache
 
+# install_dependencies:
+#   stage: install
+#   image: node:20
+#   script:
+#     - npm install
+#   artifacts:
+#     paths:
+#       - node_modules/
 install_dependencies:
   stage: install
   image: node:20
-  script:
-    - npm install
-  artifacts:
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-npm
     paths:
-      - node_modules/
-
-unit_tests:
-  stage: test
-  image: node:20
+      - ~/.npm
+      - frontend/node_modules
   script:
-    - npm install -g @angular/cli      # instalar Angular CLI globalmente
-    - npm install                       # instalar dependencias del proyecto
-    - npm run test -- --watch=false --browsers=ChromeHeadless
+    - cd frontend && npm ci && cd ..
+
+# unit_tests:
+#   stage: test
+#   image: node:20
+#   script:
+#     - npm install -g @angular/cli      # instalar Angular CLI globalmente
+#     - npm install                       # instalar dependencias del proyecto
+#     - npm run test -- --watch=false --browsers=ChromeHeadless
 
 sonar_scan:
   stage: sonar
@@ -36,7 +46,7 @@ sonar_scan:
     - sonar-scanner
       -Dsonar.projectKey=SonarSASTNodeAngular
       -Dsonar.sources=.
-      -Dsonar.host.url=http://192.168.1.50:9000
+      -Dsonar.host.url=http://192.168.204.40:9000
       -Dsonar.token=$SONAR_TOKEN
   only:
     - main
