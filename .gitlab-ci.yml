@@ -20,7 +20,7 @@ install_dependencies:
   artifacts:
     paths:
       - node_modules/
-      
+
 # install_dependencies:
 #   stage: install
 #   image: node:20
@@ -48,7 +48,7 @@ sonar_scan:
       -Dsonar.projectKey=SonarSASTNodeAngular
       -Dsonar.sources=.
       -Dsonar.host.url=http://192.168.204.40:9000
-      -Dsonar.token=$SONAR_TOKEN
+      -Dsonar.login=$SONAR_TOKEN
   only:
     - main
     - develop
