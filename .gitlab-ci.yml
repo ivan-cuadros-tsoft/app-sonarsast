@@ -25,6 +25,8 @@ unit_tests:
   stage: test
   image: node:20
   script:
+    - npm install -g @angular/cli      # instalar Angular CLI globalmente
+    - npm install                       # instalar dependencias del proyecto
     - npm run test -- --watch=false --browsers=ChromeHeadless
 
 sonar_scan:
@@ -39,7 +41,7 @@ sonar_scan:
   only:
     - main
     - develop
-    
+
 # include:
 #   - template: Auto-DevOps.gitlab-ci.yml
 
