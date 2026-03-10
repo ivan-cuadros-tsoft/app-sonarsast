@@ -1,0 +1,6 @@
+projectKey=SonarSASTNodeAngular
+serverUrl=http://localhost:9000
+serverVersion=26.2.0.119303
+dashboardUrl=http://localhost:9000/dashboard?id=SonarSASTNodeAngular
+ceTaskId=a1852cb0-c01a-40cb-9b9c-8465c490ebfb
+ceTaskUrl=http://localhost:9000/api/ce/task?id=a1852cb0-c01a-40cb-9b9c-8465c490ebfb
