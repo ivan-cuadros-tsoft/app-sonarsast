@@ -1,7 +1,7 @@
 stages:
   - install
   - sonar
-  - report   # 👈 nuevo stage
+  - report   
 
 variables:
   SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
@@ -39,12 +39,12 @@ sonar_scan:
     - develop
 
 sonar_to_gitlab_sast:
-  stage: report   # 👈 separado
+  stage: report   # 
   image: node:20
   tags:
     - local-sast
   needs:
-    - job: sonar_scan   # 👈 dependencia directa
+    - job: sonar_scan   # 
   script:
     # instalar curl por si acaso
     - apt-get update && apt-get install -y curl
@@ -58,13 +58,11 @@ sonar_to_gitlab_sast:
 
     # convertir
     - node convert-to-gitlab-sast.js sonar-issues.json gl-sast-report.json
-
   artifacts:
     reports:
       sast: gl-sast-report.json
     paths:
       - gl-sast-report.json
-
   only:
     - main
     - develop
