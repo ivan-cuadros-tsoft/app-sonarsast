@@ -1,6 +1,5 @@
 stages:
   - install
-  # - test
   - sonar
 
 variables:
@@ -23,25 +22,6 @@ install_dependencies:
     paths:
       - node_modules/
 
-# install_dependencies:
-#   stage: install
-#   image: node:20
-#   cache:
-#     key: ${CI_COMMIT_REF_SLUG}-npm
-#     paths:
-#       - ~/.npm
-#       - frontend/node_modules
-#   script:
-#     - cd frontend && npm ci && cd ..
-
-# unit_tests:
-#   stage: test
-#   image: node:20
-#   script:
-#     - npm install -g @angular/cli      # instalar Angular CLI globalmente
-#     - npm install                       # instalar dependencias del proyecto
-#     - npm run test -- --watch=false --browsers=ChromeHeadless
-
 sonar_scan:
   stage: sonar
   image: sonarsource/sonar-scanner-cli:latest
@@ -51,17 +31,8 @@ sonar_scan:
     - sonar-scanner
       -Dsonar.projectKey=SonarSASTNodeAngular
       -Dsonar.sources=.
-      -Dsonar.host.url=http://192.168.204.40:9000
+      -Dsonar.host.url=http://192.168.204.29:9000
       -Dsonar.login=$SONAR_TOKEN
   only:
     - main
     - develop
-
-# include:
-#   - template: Auto-DevOps.gitlab-ci.yml
-
-# variables:
-#   SAST_EXCLUDED_PATHS: "frontend/src/assets/private/**"
-#   TEST_DISABLED: "true"
-#   DAST_DISABLED: "true"
-#
