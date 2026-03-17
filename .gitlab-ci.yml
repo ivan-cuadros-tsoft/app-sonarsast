@@ -1,6 +1,7 @@
 stages:
   - install
   - sonar
+  - report   # 👈 nuevo stage
 
 variables:
   SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
@@ -14,7 +15,7 @@ cache:
 install_dependencies:
   stage: install
   image: node:20
-  tags:                             # <- y aquí
+  tags:
     - local-sast
   script:
     - npm install
@@ -25,7 +26,7 @@ install_dependencies:
 sonar_scan:
   stage: sonar
   image: sonarsource/sonar-scanner-cli:latest
-  tags:                             # <- y aquí
+  tags:
     - local-sast
   script:
     - sonar-scanner
@@ -33,6 +34,37 @@ sonar_scan:
       -Dsonar.sources=.
       -Dsonar.host.url=http://192.168.204.29:9000
       -Dsonar.login=$SONAR_TOKEN
+  only:
+    - main
+    - develop
+
+sonar_to_gitlab_sast:
+  stage: report   # 👈 separado
+  image: node:20
+  tags:
+    - local-sast
+  needs:
+    - job: sonar_scan   # 👈 dependencia directa
+  script:
+    # instalar curl por si acaso
+    - apt-get update && apt-get install -y curl
+
+    # esperar a que Sonar procese resultados (MUY IMPORTANTE)
+    - echo "Esperando análisis de SonarQube..."
+    - sleep 10
+
+    # obtener vulnerabilidades
+    - curl -u $SONAR_TOKEN: "http://192.168.204.29:9000/api/issues/search?types=VULNERABILITY&ps=500" -o sonar-issues.json
+
+    # convertir
+    - node convert-to-gitlab-sast.js sonar-issues.json gl-sast-report.json
+
+  artifacts:
+    reports:
+      sast: gl-sast-report.json
+    paths:
+      - gl-sast-report.json
+
   only:
     - main
     - develop
