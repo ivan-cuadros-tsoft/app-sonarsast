@@ -54,7 +54,7 @@ sonar_to_gitlab_sast:
     - sleep 10
 
     # obtener vulnerabilidades
-    - "curl -u $SONAR_TOKEN: http://192.168.204.29:9000/api/issues/search?types=VULNERABILITY&ps=500 -o sonar-issues.json"
+    - 'curl -u "$SONAR_TOKEN:" "http://192.168.204.29:9000/api/issues/search?types=VULNERABILITY&ps=500" -o sonar-issues.json'
 
     # convertir
     - node convert-to-gitlab-sast.js sonar-issues.json gl-sast-report.json
