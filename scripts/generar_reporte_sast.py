@@ -12,21 +12,54 @@ def fetch_vulnerabilities():
         "componentKeys": PROJECT_KEY,
         "types": "VULNERABILITY",
         "resolved": "false",
-        "ps": 100,  # página tamaño máximo (100)
-        "p": 1      # página 1 (puedes implementar paginado)
+        "ps": 100,
+        "p": 1
     }
     issues = []
     while True:
         resp = requests.get(url, auth=auth, params=params)
         data = resp.json()
         issues.extend(data.get("issues", []))
-        if data.get("paging", {}).get("pageIndex") >= data.get("paging", {}).get("total"):
+        paging = data.get("paging", {})
+        if paging.get("pageIndex", 1) >= paging.get("total", 1):
             break
         params["p"] += 1
     return issues
 
+def map_rule_to_recommendation(rule_key):
+    mapping = {
+        "typescript:S7652": (
+            "Evita nombrar outputs con prefijos o nombres 'on'.\n\n"
+            "Ejemplo no conforme:\n"
+            "```typescript\n"
+            "class MyComponent {\n"
+            "  onClick = output();  // No conforme\n"
+            "  change = output({ alias: 'onChange' }); // No conforme\n"
+            "}\n"
+            "```\n\n"
+            "Ejemplo conforme:\n"
+            "```typescript\n"
+            "class MyComponent {\n"
+            "  click = new EventEmitter();\n"
+            "  submit = new EventEmitter();\n"
+            "}\n"
+            "```\n\n"
+            "Más detalles: https://angular.dev/guide/components/outputs#choosing-event-names"
+        ),
+        "python:S2077": (
+            "Evitar uso de eval() para prevenir ejecución de código arbitrario.\n"
+            "Consulta: https://rules.sonarsource.com/python/RSPEC-2077"
+        ),
+        "python:S5063": (
+            "Validar correctamente entradas para evitar inyecciones SQL.\n"
+            "Consulta: https://rules.sonarsource.com/python/RSPEC-5063"
+        ),
+        # Añade más reglas y recomendaciones aquí
+    }
+    return mapping.get(rule_key, "Consultar documentación oficial de la regla para remediación.")
+
 def generate_report(issues):
-    with open("reporte_sast.md", "w") as f:
+    with open("reporte_sast.md", "w", encoding="utf-8") as f:
         f.write("# Reporte de Vulnerabilidades SAST\n\n")
         if not issues:
             f.write("No se encontraron vulnerabilidades abiertas.\n")
@@ -38,8 +71,6 @@ def generate_report(issues):
             component = issue.get("component", "")
             line = issue.get("line", "N/A")
             rule = issue.get("rule", "")
-
-            # Aquí podrías mapear reglas a recomendaciones personalizadas
             recomendacion = map_rule_to_recommendation(rule)
 
             f.write(f"## Vulnerabilidad: {message}\n")
@@ -47,17 +78,7 @@ def generate_report(issues):
             f.write(f"- Archivo: {component}\n")
             f.write(f"- Línea: {line}\n")
             f.write(f"- Regla: {rule}\n")
-            f.write(f"- Recomendación: {recomendacion}\n\n")
-
-def map_rule_to_recommendation(rule_key):
-    # Mapea reglas comunes a recomendaciones (puedes ampliar esta lista)
-    mapping = {
-        "python:S2077": "Evitar uso de eval() para prevenir ejecución de código arbitrario.",
-        "python:S5063": "Validar correctamente entradas para evitar inyecciones SQL.",
-        "python:S4044": "No usar funciones con vulnerabilidades conocidas.",
-        # Añade más reglas y recomendaciones aquí
-    }
-    return mapping.get(rule_key, "Consultar documentación oficial de la regla para remediación.")
+            f.write(f"- Recomendación:\n{recomendacion}\n\n")
 
 if __name__ == "__main__":
     issues = fetch_vulnerabilities()
