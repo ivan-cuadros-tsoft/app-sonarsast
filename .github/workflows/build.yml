@@ -119,3 +119,17 @@ jobs:
         with:
           name: reporte-sast
           path: reporte_sast.md
+
+      # 📄 Reporte SAST HTML
+      - name: Generate HTML SAST Report
+        run: python scripts/generar_reporte_sast_html.py
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_URL: https://sonarcloud.io
+          PROJECT_KEY: "ivan-cuadros-tsoft_app-sonarsast"
+
+      - name: Upload HTML Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte_sast_html
+          path: reporte_sast_html.html
