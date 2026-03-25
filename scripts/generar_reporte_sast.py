@@ -26,7 +26,7 @@ def fetch_vulnerabilities():
     return issues
 
 def generate_report(issues):
-    with open("reporte_vulnerabilidades.md", "w") as f:
+    with open("reporte_sast.md", "w") as f:
         f.write("# Reporte de Vulnerabilidades SAST\n\n")
         if not issues:
             f.write("No se encontraron vulnerabilidades abiertas.\n")
@@ -62,4 +62,4 @@ def map_rule_to_recommendation(rule_key):
 if __name__ == "__main__":
     issues = fetch_vulnerabilities()
     generate_report(issues)
-    print("📄 Reporte de vulnerabilidades generado: reporte_vulnerabilidades.md")
+    print("📄 Reporte de vulnerabilidades generado: reporte_sast.md")

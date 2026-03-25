@@ -1,0 +1,4 @@
+https://sonarcloud.io/api/qualitygates/project_status?projectKey=ivan-cuadros-tsoft_app-sonarsast
+
+https://sonarcloud.io/api/issues/search?componentKeys=ivan-cuadros-tsoft_app-sonarsast&types=VULNERABILITY&resolved=false
+
