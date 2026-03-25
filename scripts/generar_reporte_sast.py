@@ -39,7 +39,7 @@ def get_quality_gate():
             sys.exit(1)
 
         print("⏳ Esperando análisis de SonarCloud...")
-        time.sleep(15)
+        time.sleep(10)
 
     print("❌ Timeout esperando Quality Gate")
     sys.exit(1)
