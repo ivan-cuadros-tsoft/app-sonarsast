@@ -23,7 +23,7 @@ auth = (TOKEN, "")
 def get_quality_gate():
     url = f"{SONAR_URL}/api/qualitygates/project_status?projectKey={PROJECT_KEY}"
 
-    for i in range(10):
+    for i in range(15):
         response = requests.get(url, auth=auth)
         data = response.json()
 
@@ -37,7 +37,7 @@ def get_quality_gate():
             sys.exit(1)
 
         print("⏳ Esperando análisis de SonarCloud...")
-        time.sleep(5)
+        time.sleep(10)
 
     print("❌ Timeout esperando Quality Gate")
     sys.exit(1)

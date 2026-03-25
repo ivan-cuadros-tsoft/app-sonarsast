@@ -19,6 +19,57 @@
 #           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 
+# # # name: Build
+
+# # # on:
+# # #   push:
+# # #     branches:
+# # #       - main
+# # #   pull_request:
+# # #     types: [opened, synchronize, reopened]
+
+# # # jobs:
+# # #   sonarqube:
+# # #     name: SonarQube
+# # #     runs-on: ubuntu-latest
+
+# # #     steps:
+# # #       - uses: actions/checkout@v4
+# # #         with:
+# # #           fetch-depth: 0  
+
+# # #       - name: SonarQube Scan
+# # #         uses: SonarSource/sonarqube-scan-action@v6
+# # #         env:
+# # #           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+# # #       # 👇 Nuevo paso: instalar Python
+# # #       - name: Setup Python
+# # #         uses: actions/setup-python@v5
+# # #         with:
+# # #           python-version: '3.11'
+
+# # #       # 👇 Instalar dependencias
+# # #       - name: Install dependencies
+# # #         run: pip install requests
+
+# # #       # 👇 Ejecutar script de reporte
+# # #       - name: Generate SAST Report
+# # #         run: python scripts/generar_reporte_sast.py
+# # #         env:
+# # #           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+# # #           SONAR_URL: ${{ secrets.SONAR_URL }}
+# # #           PROJECT_KEY: "mi_proyecto"
+
+# # #       # 👇 Guardar el reporte como artefacto
+# # #       - name: Upload Report
+# # #         uses: actions/upload-artifact@v4
+# # #         with:
+# # #           name: reporte-sast
+# # #           path: reporte_sast.md
+
+
+
 name: Build
 
 on:
@@ -30,7 +81,7 @@ on:
 
 jobs:
   sonarqube:
-    name: SonarQube
+    name: SonarCloud
     runs-on: ubuntu-latest
 
     steps:
@@ -38,30 +89,31 @@ jobs:
         with:
           fetch-depth: 0  
 
-      - name: SonarQube Scan
+      # 🔍 Scan correcto para SonarCloud
+      - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
 
-      # 👇 Nuevo paso: instalar Python
+      # 🐍 Python
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      # 👇 Instalar dependencias
       - name: Install dependencies
         run: pip install requests
 
-      # 👇 Ejecutar script de reporte
+      # 📄 Reporte SAST
       - name: Generate SAST Report
         run: python scripts/generar_reporte_sast.py
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_URL: ${{ secrets.SONAR_URL }}
-          PROJECT_KEY: "mi_proyecto"
+          SONAR_URL: https://sonarcloud.io
+          PROJECT_KEY: "juan-perez-key_app-sonarsast"  # 👈 CAMBIA ESTO
 
-      # 👇 Guardar el reporte como artefacto
+      # 📦 Artefacto
       - name: Upload Report
         uses: actions/upload-artifact@v4
         with:
