@@ -115,8 +115,29 @@ tr:hover { background-color: #f1f1f1; }
             f.write(f"<div class='recommendation'><strong>Recomendación:</strong>\n{recomendacion}</div>\n")
             f.write("</div>\n")
 
+        summary = count_by_severity(issues)
+
+        f.write("<h2>Resumen por Severidad</h2>\n")
+        total = sum(summary.values())
+        f.write(f"<p><strong>Total de vulnerabilidades:</strong> {total}</p>")
+        
+        f.write("<table>\n<tr><th>Severidad</th><th>Cantidad</th></tr>\n")
+
+        for severity, count in summary.items():
+            color = SEVERITY_COLORS.get(severity.upper(), "#cccccc")
+            f.write(f"<tr><td style='background:{color}; color:white;'>{severity}</td><td>{count}</td></tr>\n")
+
+        f.write("</table>\n")
+
         f.write("</body></html>")
     print("📄 Reporte profesional generado: reporte_sast_html.html")
+
+def count_by_severity(issues):
+    summary = {}
+    for issue in issues:
+        severity = issue.get("severity", "UNKNOWN")
+        summary[severity] = summary.get(severity, 0) + 1
+    return summary
 
 if __name__ == "__main__":
     issues = fetch_vulnerabilities()
