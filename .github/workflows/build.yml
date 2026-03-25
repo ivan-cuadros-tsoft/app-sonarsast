@@ -111,7 +111,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_URL: https://sonarcloud.io
-          PROJECT_KEY: "juan-perez-key_app-sonarsast"  # 👈 CAMBIA ESTO
+          PROJECT_KEY: "ivan-cuadros-tsoft_app-sonarsast"  # 👈 CAMBIA ESTO
 
       # 📦 Artefacto
       - name: Upload Report
