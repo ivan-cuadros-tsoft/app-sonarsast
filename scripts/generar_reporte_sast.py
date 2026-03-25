@@ -1,5 +1,7 @@
 import os
 import requests
+import html
+from bs4 import BeautifulSoup
 
 SONAR_URL = os.getenv("SONAR_URL", "https://sonarcloud.io")
 PROJECT_KEY = os.getenv("PROJECT_KEY")
@@ -26,37 +28,27 @@ def fetch_vulnerabilities():
         params["p"] += 1
     return issues
 
-def map_rule_to_recommendation(rule_key):
-    mapping = {
-        "typescript:S7652": (
-            "Evita nombrar outputs con prefijos o nombres 'on'.\n\n"
-            "Ejemplo no conforme:\n"
-            "```typescript\n"
-            "class MyComponent {\n"
-            "  onClick = output();  // No conforme\n"
-            "  change = output({ alias: 'onChange' }); // No conforme\n"
-            "}\n"
-            "```\n\n"
-            "Ejemplo conforme:\n"
-            "```typescript\n"
-            "class MyComponent {\n"
-            "  click = new EventEmitter();\n"
-            "  submit = new EventEmitter();\n"
-            "}\n"
-            "```\n\n"
-            "Más detalles: https://angular.dev/guide/components/outputs#choosing-event-names"
-        ),
-        "python:S2077": (
-            "Evitar uso de eval() para prevenir ejecución de código arbitrario.\n"
-            "Consulta: https://rules.sonarsource.com/python/RSPEC-2077"
-        ),
-        "python:S5063": (
-            "Validar correctamente entradas para evitar inyecciones SQL.\n"
-            "Consulta: https://rules.sonarsource.com/python/RSPEC-5063"
-        ),
-        # Añade más reglas y recomendaciones aquí
-    }
-    return mapping.get(rule_key, "Consultar documentación oficial de la regla para remediación.")
+def html_to_markdown_text(html_text):
+    # Usa BeautifulSoup para limpiar etiquetas HTML y convertir a texto plano simple
+    soup = BeautifulSoup(html_text, "html.parser")
+    text = soup.get_text(separator="\n")
+    # Desescape entidades HTML
+    return html.unescape(text.strip())
+
+def fetch_rule_description(rule_key):
+    url = f"{SONAR_URL}/api/rules/show"
+    params = {"key": rule_key}
+    resp = requests.get(url, params=params)
+    if resp.status_code != 200:
+        return "Consultar documentación oficial de la regla para remediación."
+    data = resp.json()
+    rule = data.get("rule", {})
+    desc_html = rule.get("htmlDesc", "")
+    desc_text = html_to_markdown_text(desc_html)
+    lang, code = rule_key.split(":", 1)
+    rule_url = f"https://rules.sonarsource.com/{lang}/RSPEC-{code[1:]}" if code.startswith("S") else ""
+    recommendation = f"{desc_text}\n\nMás detalles: {rule_url}"
+    return recommendation
 
 def generate_report(issues):
     with open("reporte_sast.md", "w", encoding="utf-8") as f:
@@ -71,7 +63,7 @@ def generate_report(issues):
             component = issue.get("component", "")
             line = issue.get("line", "N/A")
             rule = issue.get("rule", "")
-            recomendacion = map_rule_to_recommendation(rule)
+            recomendacion = fetch_rule_description(rule)
 
             f.write(f"## Vulnerabilidad: {message}\n")
             f.write(f"- Severidad: **{severity}**\n")
