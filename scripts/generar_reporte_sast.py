@@ -8,7 +8,8 @@ import os
 # CONFIGURACIÓN (desde ENV)
 # ==============================
 SONAR_URL = os.getenv("SONAR_URL", "https://sonarcloud.io")
-PROJECT_KEY = os.getenv("PROJECT_KEY")
+#PROJECT_KEY = os.getenv("PROJECT_KEY")
+PROJECT_KEY = "ivan-cuadros-tsoft_app-sonarsast"
 TOKEN = os.getenv("SONAR_TOKEN")
 
 if not PROJECT_KEY or not TOKEN:
@@ -22,9 +23,10 @@ auth = (TOKEN, "")
 # ==============================
 def get_quality_gate():
     url = f"{SONAR_URL}/api/qualitygates/project_status?projectKey={PROJECT_KEY}"
+    print("URL:", url)
 
-    for i in range(15):
-        response = requests.get(url, auth=auth)
+    for i in range(20):
+        response = requests.get(url, auth=auth)        
         data = response.json()
 
         print(f"Intento {i+1} - respuesta:", data)
@@ -37,7 +39,7 @@ def get_quality_gate():
             sys.exit(1)
 
         print("⏳ Esperando análisis de SonarCloud...")
-        time.sleep(10)
+        time.sleep(15)
 
     print("❌ Timeout esperando Quality Gate")
     sys.exit(1)
