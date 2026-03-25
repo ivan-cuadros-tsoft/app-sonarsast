@@ -25,8 +25,7 @@ def fetch_vulnerabilities():
         "types": "VULNERABILITY",
         "resolved": "false",
         "ps": 100,
-        "p": 1,
-        "sinceLeakPeriod": "true"  # 🔥 CLAVE
+        "p": 1
     }
     issues = []
     while True:
