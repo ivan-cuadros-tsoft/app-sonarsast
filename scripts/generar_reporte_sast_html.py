@@ -25,7 +25,8 @@ def fetch_vulnerabilities():
         "types": "VULNERABILITY",
         "resolved": "false",
         "ps": 100,
-        "p": 1
+        "p": 1,
+        "sinceLeakPeriod": "true"  # 🔥 CLAVE
     }
     issues = []
     while True:
@@ -120,7 +121,7 @@ tr:hover { background-color: #f1f1f1; }
         f.write("<h2>Resumen por Severidad</h2>\n")
         total = sum(summary.values())
         f.write(f"<p><strong>Total de vulnerabilidades:</strong> {total}</p>")
-        
+
         f.write("<table>\n<tr><th>Severidad</th><th>Cantidad</th></tr>\n")
 
         for severity, count in summary.items():
