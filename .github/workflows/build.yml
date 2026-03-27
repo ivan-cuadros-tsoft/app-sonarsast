@@ -113,7 +113,7 @@ jobs:
           SONAR_URL: https://sonarcloud.io
           PROJECT_KEY: "ivan-cuadros-tsoft_app-sonarsast"  # 👈 CAMBIA ESTO
 
-      # 📦 Artefacto
+      # Artefacto
       - name: Upload Report
         uses: actions/upload-artifact@v4
         with:
